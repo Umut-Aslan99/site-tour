@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>site-tour Demo</title>
+  <style>
+    :root { --accent: #e8834a; --font-body: system-ui, sans-serif; color-scheme: dark; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #0a0a0b; color: #f4f1ea; }
+    header { position: sticky; top: 0; background: #000; display: flex; gap: 18px; align-items: center; padding: 14px 24px; border-bottom: 4px solid var(--accent); }
+    header a { color: #c9c5bc; text-decoration: none; }
+    main { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+    .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .card { background: #151518; border: 1px solid #2a2a2e; border-radius: 14px; padding: 18px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+    td, th { padding: 10px; border-bottom: 1px solid #2a2a2e; text-align: left; }
+    .spacer { height: 900px; }
+    @media (max-width: 640px) { .tiles { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <header><strong data-tour="brand">Demo-App</strong><nav data-tour="nav"><a href="/demo/index.html">Start</a> · <a href="/demo/second.html">Zweite Seite</a></nav></header>
+  <main>
+    <h1>Lagerübersicht</h1>
+    <div class="tiles" data-tour="tiles">
+      <div class="card">Buchungen <b>12</b></div><div class="card">Inventur <b>3</b></div><div class="card">Unter Min. <b>5</b></div><div class="card">WE <b>3</b></div>
+    </div>
+    <p><button id="try" data-tour="try">Klick mich</button> <span id="clicked">nicht geklickt</span> <button id="outside">Außerhalb</button> <span id="outside-state">nicht geklickt</span></p>
+    <div class="spacer"></div>
+    <table data-tour="table"><tr><th>Artikel</th><th>Bestand</th></tr><tr><td>ET-1001</td><td>20</td></tr><tr><td>ET-1002</td><td>4</td></tr></table>
+    <div id="late"></div>
+  </main>
+  <script>
+    document.getElementById('try').addEventListener('click', () => (document.getElementById('clicked').textContent = 'geklickt'));
+    document.getElementById('outside').addEventListener('click', () => (document.getElementById('outside-state').textContent = 'geklickt'));
+    setTimeout(() => { document.getElementById('late').innerHTML = '<div class="card" data-tour="late">Spät geladene Daten</div>'; }, 700);
+  </script>
+  <script type="module" src="./tour.js"></script>
+</body>
+</html>
