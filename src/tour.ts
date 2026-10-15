@@ -22,6 +22,8 @@ export interface TourStep {
   padding?: number;
   /** How long to wait for the target in ms (data may still be loading). */
   wait?: number;
+  /** Show this step only if this returns true (e.g. only on the sign-in page, only for some roles); otherwise skip it silently. */
+  when?: () => boolean;
 }
 
 export interface TourOptions {
@@ -153,6 +155,12 @@ export class Tour {
       const reloading = await navigate(step.path);
       if (reloading || token !== this.seq) return;
     }
+    if (step.when && !step.when()) {
+      const nextIndex = i + dir;
+      if (nextIndex < 0 || nextIndex >= this.options.steps.length) this.close('done');
+      else void this.show(nextIndex, dir);
+      return;
+    }
     if (step.click) (await waitFor(step.click, step.wait ?? 5000))?.click();
 
     let target: HTMLElement | null = null;
@@ -233,6 +241,15 @@ export class Tour {
   private position = (): void => {
     if (!this.host) return;
     const { spot, bubble, blocks } = this.els;
+    const sel = this.options.steps[this.index]?.target;
+    if (this.target && !this.target.isConnected && sel) {
+      // Frameworks may replace the element (e.g. Blazor taking over the prerendered page): find it again.
+      const fresh = document.querySelector<HTMLElement>(sel);
+      if (fresh) {
+        this.target = fresh;
+        this.observer?.observe(fresh);
+      }
+    }
     const vw = innerWidth;
     const vh = innerHeight;
     const step = this.options.steps[this.index];
@@ -316,7 +333,9 @@ export class Tour {
     };
     addEventListener('resize', schedule);
     addEventListener('scroll', schedule, true);
-    this.cleanup.push(() => removeEventListener('resize', schedule), () => removeEventListener('scroll', schedule, true));
+    // Layout can also shift without a resize (late data, re-rendering): check twice a second.
+    const timer = setInterval(schedule, 500);
+    this.cleanup.push(() => removeEventListener('resize', schedule), () => removeEventListener('scroll', schedule, true), () => clearInterval(timer));
     if (typeof ResizeObserver !== 'undefined') {
       this.observer = new ResizeObserver(schedule);
       this.observer.observe(document.body);

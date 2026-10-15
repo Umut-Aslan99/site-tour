@@ -63,6 +63,15 @@ test('keyboard: arrows move, Escape skips, focus stays in the bubble', async ({ 
   expect(await page.evaluate(() => localStorage.getItem('site-tour:demo'))).toBe('skipped');
 });
 
+test('the spotlight follows an element that the page replaced', async ({ page }) => {
+  await page.goto('/demo/index.html');
+  await next(page);
+  await page.waitForTimeout(2200); // the demo replaces the tiles after 1.5 s
+  const spot = await page.locator('[data-site-tour="demo"]').evaluate((h) => h.shadowRoot!.querySelector('.spot')!.getBoundingClientRect().top);
+  const tiles = (await page.locator('[data-tour="tiles"]').boundingBox())!;
+  expect(Math.abs(spot - (tiles.y - 8))).toBeLessThan(2);
+});
+
 test('a reload in the middle continues at the same step', async ({ page }) => {
   await page.goto('/demo/index.html');
   await next(page);

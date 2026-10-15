@@ -34,6 +34,8 @@
     document.getElementById('try').addEventListener('click', () => (document.getElementById('clicked').textContent = 'geklickt'));
     document.getElementById('outside').addEventListener('click', () => (document.getElementById('outside-state').textContent = 'geklickt'));
     setTimeout(() => { document.getElementById('late').innerHTML = '<div class="card" data-tour="late">Spät geladene Daten</div>'; }, 700);
+    // Like Blazor taking over the prerendered page: the highlighted element is replaced by a new one.
+    setTimeout(() => { const t = document.querySelector('[data-tour="tiles"]'); const c = t.cloneNode(true); c.style.marginTop = '40px'; t.replaceWith(c); }, 1500);
   </script>
   <script type="module" src="./tour.js"></script>
 </body>

@@ -9,6 +9,7 @@ window.siteTour = startTours([{
     { target: '[data-tour="table"]', title: 'Weit unten auf der Seite', text: 'Ich scrolle für Sie dorthin.', mood: 'curious' },
     { target: '[data-tour="late"]', title: 'Später geladen', text: 'Die Tour wartet, bis die Daten da sind.' },
     { target: '[data-tour="missing"]', title: 'Gibt es nicht', text: 'Dieser Schritt wird übersprungen.', wait: 500 },
+    { title: 'Nur auf der Startseite', text: 'Wird übersprungen, wenn die Bedingung nicht passt.', when: () => false },
     { path: '/demo/second.html', target: '[data-tour="second"]', title: 'Andere Seite', text: 'Die Tour wechselt die Seite selbst und macht dort weiter.', mood: 'worried' },
     { title: 'Fertig!', text: 'Das war’s. Über den runden Knopf unten links starten Sie die Tour neu. Mehr unter [umut-aslan.dev](https://umut-aslan.dev).' },
   ],
