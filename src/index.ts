@@ -7,6 +7,9 @@ export { Tour, type TourOptions, type TourStep };
 export interface StartOptions {
   /** Where the round "replay the tour" button sits; false hides it. */
   launcher?: 'left' | 'right' | false;
+  /** Automated browsers (tests, screenshot and link-preview services) get no tour unless the URL asks for it
+   *  with ?tour=start. Set to 'run' to treat them like people (the library's own tests). */
+  automated?: 'skip' | 'run';
 }
 
 /**
@@ -63,7 +66,15 @@ export function startTours(tours: TourOptions[], options: StartOptions = {}): { 
   }
 
   const run = () => {
-    consider();
+    const params = new URLSearchParams(location.search);
+    const requested = params.get('tour') === 'start';
+    if (requested) {
+      params.delete('tour');
+      const query = params.toString();
+      history.replaceState(history.state, '', location.pathname + (query ? `?${query}` : '') + location.hash);
+    }
+    if (navigator.webdriver && options.automated !== 'run' && !requested && !all.some((t) => t.resumeAt !== null)) return;
+    if (requested) { const t = forPage(); if (t) begin(t); } else consider();
     if (!active?.running) setLauncher(true);
     // Single-page apps change the page without a load: check again when the path changes.
     let path = location.pathname;

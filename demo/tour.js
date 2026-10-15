@@ -12,4 +12,4 @@ window.siteTour = startTours([{
     { path: '/demo/second.html', target: '[data-tour="second"]', title: 'Andere Seite', text: 'Die Tour wechselt die Seite selbst und macht dort weiter.', mood: 'worried' },
     { title: 'Fertig!', text: 'Das war’s. Über den runden Knopf unten links starten Sie die Tour neu. Mehr unter [umut-aslan.dev](https://umut-aslan.dev).' },
   ],
-}]);
+}], { automated: 'run' });

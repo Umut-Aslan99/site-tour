@@ -34,8 +34,8 @@ export interface TourOptions {
 }
 
 const LABELS = {
-  de: { skip: 'Tour überspringen', back: 'Zurück', next: 'Weiter', start: 'Los geht’s', done: 'Fertig', step: (i: number, n: number) => `Schritt ${i} von ${n}`, welcome: 'Willkommen' },
-  en: { skip: 'Skip tour', back: 'Back', next: 'Next', start: 'Let’s go', done: 'Done', step: (i: number, n: number) => `Step ${i} of ${n}`, welcome: 'Welcome' },
+  de: { skip: 'Tour überspringen', skipShort: 'Überspringen', back: 'Zurück', next: 'Weiter', start: 'Los geht’s', done: 'Fertig', step: (i: number, n: number) => `Schritt ${i} von ${n}`, welcome: 'Willkommen' },
+  en: { skip: 'Skip tour', skipShort: 'Skip', back: 'Back', next: 'Next', start: 'Let’s go', done: 'Done', step: (i: number, n: number) => `Step ${i} of ${n}`, welcome: 'Welcome' },
 };
 
 type Rect = { top: number; left: number; width: number; height: number };
@@ -169,9 +169,12 @@ export class Tour {
     }
     this.target = target;
     this.render(step, i);
+    // Hidden while the page scrolls to the target, then shown in place (no bubble flying across stale positions).
+    this.els.bubble.classList.add('moving');
     if (target) await this.bringIntoView(target);
     if (token !== this.seq) return;
     this.position();
+    this.els.bubble.classList.remove('moving');
     this.attach(step, target, i);
     this.els.speech.querySelector<HTMLButtonElement>('button.primary')?.focus({ preventScroll: true });
   }
@@ -191,7 +194,15 @@ export class Tour {
     text.id = 'tour-text';
     text.append(renderText(step.text));
     const controls = el('div', 'controls');
-    if (!last) controls.append(button(L.skip, 'link', () => this.skip(), 'tour-skip'));
+    if (!last) {
+      const skip = button('', 'link', () => this.skip(), 'tour-skip');
+      const full = el('span', 'full');
+      full.textContent = L.skip;
+      const short = el('span', 'short');
+      short.textContent = L.skipShort;
+      skip.append(full, short);
+      controls.append(skip);
+    }
     controls.append(el('span', 'grow'));
     if (i > 0) controls.append(button(L.back, '', () => this.back(), 'tour-back'));
     const nextLabel = step.nextLabel ?? (last ? L.done : i === 0 ? L.start : L.next);

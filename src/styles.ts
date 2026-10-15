@@ -6,11 +6,15 @@ export const css = `
 * { box-sizing: border-box; }
 .layer { position: fixed; inset: 0; z-index: 2147483000; pointer-events: none; }
 .block { position: fixed; background: transparent; pointer-events: auto; }
-.spot { position: fixed; border-radius: 12px; pointer-events: none; box-shadow: 0 0 0 200vmax rgb(8 8 10 / 0.74), 0 0 0 3px var(--accent, #e8834a), 0 0 28px 6px rgb(232 131 74 / 0.45);
+.spot { position: fixed; border-radius: 12px; pointer-events: none; box-shadow: 0 0 0 200vmax rgb(8 8 10 / 0.8), 0 0 0 3px var(--accent, #e8834a), 0 0 28px 6px rgb(232 131 74 / 0.45);
   transition: top .35s cubic-bezier(.2,.7,.1,1), left .35s cubic-bezier(.2,.7,.1,1), width .35s cubic-bezier(.2,.7,.1,1), height .35s cubic-bezier(.2,.7,.1,1); }
-.spot.none { box-shadow: 0 0 0 200vmax rgb(8 8 10 / 0.74); width: 0 !important; height: 0 !important; top: 50% !important; left: 50% !important; }
+.spot.none { box-shadow: 0 0 0 200vmax rgb(8 8 10 / 0.8); width: 0 !important; height: 0 !important; top: 50% !important; left: 50% !important; }
 .bubble { position: fixed; display: flex; align-items: flex-end; gap: 10px; width: min(500px, calc(100vw - 24px)); pointer-events: auto;
-  transition: top .35s cubic-bezier(.2,.7,.1,1), left .35s cubic-bezier(.2,.7,.1,1); outline: none; }
+  transition: top .35s cubic-bezier(.2,.7,.1,1), left .35s cubic-bezier(.2,.7,.1,1), opacity .2s ease; outline: none; }
+.bubble.moving { opacity: 0; transition: none; }
+.short { display: none; }
+.bubble.sheet .short { display: inline; }
+.bubble.sheet .full { display: none; }
 .mascot { flex: none; width: 76px; height: 76px; filter: drop-shadow(0 6px 14px rgb(0 0 0 / .35)); animation: bob 3.2s ease-in-out infinite; }
 .mascot svg { width: 100%; height: 100%; display: block; }
 .speech { position: relative; flex: 1; min-width: 0; background: #fffdf8; border-radius: 16px; padding: 16px 18px 14px; box-shadow: 0 18px 50px -12px rgb(0 0 0 / .6);
