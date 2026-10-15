@@ -151,15 +151,15 @@ export class Tour {
     this.index = i;
     safe(() => sessionStorage.setItem(this.resumeKey, String(i)));
 
-    if (step.path && !onPath(step.path)) {
-      const reloading = await navigate(step.path);
-      if (reloading || token !== this.seq) return;
-    }
     if (step.when && !step.when()) {
       const nextIndex = i + dir;
       if (nextIndex < 0 || nextIndex >= this.options.steps.length) this.close('done');
       else void this.show(nextIndex, dir);
       return;
+    }
+    if (step.path && !onPath(step.path)) {
+      const reloading = await navigate(step.path);
+      if (reloading || token !== this.seq) return;
     }
     if (step.click) (await waitFor(step.click, step.wait ?? 5000))?.click();
 
@@ -342,10 +342,14 @@ export class Tour {
       if (target) this.observer.observe(target);
     }
     if (target && step.interactive && step.advanceOnClick) {
-      const onClick = () => {
-        // Survives a full page load (form post); in a single-page app we move on ourselves.
+      const onClick = async () => {
+        // Survives a full page load (form post); in a single-page app we move on ourselves – once the page has changed.
         safe(() => sessionStorage.setItem(this.resumeKey, String(i + 1)));
-        setTimeout(() => { if (this.index === i) this.next(); }, 700);
+        const from = location.href;
+        const deadline = Date.now() + 10_000;
+        while (location.href === from && Date.now() < deadline) await sleep(100);
+        await sleep(300);
+        if (this.index === i) this.next();
       };
       target.addEventListener('click', onClick, true);
       this.cleanup.push(() => target.removeEventListener('click', onClick, true));
